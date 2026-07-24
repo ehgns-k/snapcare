@@ -1,0 +1,146 @@
+\documentclass{article}
+
+\usepackage[papersize={148mm,210mm},
+            top=18mm, bottom=18mm, left=12mm, right=12mm]{geometry}
+\usepackage{tikz}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{eso-pic}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\pagestyle{empty}
+
+% ---- ArUco markers pinned to absolute page corners ----
+% IDs: 00=TL, 01=TR, 02=BR, 03=BL  (clockwise)
+% 9mm marker, 6mm from each page edge -> occupies 6..15mm
+\newcommand{\pagefiducials}{%
+  \AddToShipoutPictureBG*{%
+    \begin{tikzpicture}[remember picture, overlay]
+      \node[anchor=north west, inner sep=0]
+        at ([shift={( 6mm,-6mm)}]current page.north west)
+        {\includegraphics[width=9mm]{aruco/00_aruco.png}};
+      \node[anchor=north east, inner sep=0]
+        at ([shift={(-6mm,-6mm)}]current page.north east)
+        {\includegraphics[width=9mm]{aruco/01_aruco.png}};
+      \node[anchor=south east, inner sep=0]
+        at ([shift={(-6mm, 6mm)}]current page.south east)
+        {\includegraphics[width=9mm]{aruco/02_aruco.png}};
+      \node[anchor=south west, inner sep=0]
+        at ([shift={( 6mm, 6mm)}]current page.south west)
+        {\includegraphics[width=9mm]{aruco/03_aruco.png}};
+    \end{tikzpicture}%
+  }%
+}
+
+% ---- tall narrow rounded-rectangle mark target, no baseline shift ----
+\newcommand{\bx}{%
+  \tikz[baseline=0pt]{
+    \draw[line width=0.3pt, rounded corners=1mm]
+      (0,0) rectangle (3mm,5.5mm);
+  }%
+}
+
+% ---- one storey of the pillar: slot box + layer number + mark target ----
+\newcommand{\storey}[1]{%
+  \tikz[baseline=0pt]{
+    \draw[line width=0.4pt] (0,0) rectangle (14mm,5.5mm);
+    \node at (7mm,2.75mm) {\footnotesize #1};
+  }\hspace{2.5mm}\bx%
+}
+
+% ---- one hour cell: mark target above, hh:00 label below ----
+\newcommand{\hourcell}[1]{%
+  \begin{tabular}{@{}c@{}}\bx\\[0.4mm]\tiny #1:00\end{tabular}%
+}
+
+\begin{document}
+\pagefiducials
+
+% ================= HEADER =================
+\noindent
+\hfill{\large\bfseries PILL DISPENSER SCHEDULE}\hfill\null\par
+\noindent\rule{\linewidth}{0.4pt}
+
+% ================= HANDWRITING ZONE =================
+\vspace{2.5mm}
+\noindent
+{\footnotesize Medication name}\\[0.8mm]
+\noindent\rule{\linewidth}{0.3pt}
+
+\vspace{3mm}
+\noindent
+{\footnotesize Pill count per slot}\\[0.8mm]
+\noindent\rule{\linewidth}{0.3pt}
+
+\vspace{3mm}
+\noindent
+{\footnotesize Notes}\\[0.8mm]
+\noindent\rule{\linewidth}{0.3pt}
+
+\vspace{2.5mm}
+\noindent\rule{\linewidth}{0.4pt}
+
+% ================= LAYER (pillar) + DAYS + DURATION =================
+\vspace{2.5mm}
+\noindent
+\begin{minipage}[t]{0.34\linewidth}
+  {\footnotesize\bfseries LAYER}\\[0.8mm]
+  {\tiny fill exactly one}\\[2mm]
+  \storey{8}\\[0.3mm]
+  \storey{7}\\[0.3mm]
+  \storey{6}\\[0.3mm]
+  \storey{5}\\[0.3mm]
+  \storey{4}\\[0.3mm]
+  \storey{3}\\[0.3mm]
+  \storey{2}\\[0.3mm]
+  \storey{1}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.60\linewidth}
+  {\footnotesize\bfseries DAYS OF WEEK}\\[0.8mm]
+  {\tiny fill every day pills of this layer is needed}\\[2.5mm]
+  \begin{tabular}{@{}*{7}{c@{\hspace{3.4mm}}}}
+    \bx & \bx & \bx & \bx & \bx & \bx & \bx \\[0.4mm]
+    \tiny MON & \tiny TUE & \tiny WED & \tiny THU & \tiny FRI & \tiny SAT & \tiny SUN \\
+  \end{tabular}
+
+  \vspace{6mm}
+  {\footnotesize\bfseries DURATION}\\[0.8mm]
+  {\tiny fill exactly one}\\[2.5mm]
+  \begin{tabular}{@{}*{5}{c@{\hspace{3.4mm}}}}
+    \bx & \bx & \bx & \bx & \bx \\[0.4mm]
+    \tiny 7d & \tiny 14d & \tiny 30d & \tiny 90d & \tiny $\infty$ \\
+  \end{tabular}
+\end{minipage}
+
+\vspace{4mm}
+\noindent\rule{\linewidth}{0.4pt}
+
+% ================= DROP TIME =================
+\vspace{2.5mm}
+\noindent
+{\footnotesize\bfseries DROP TIME}\hspace{2.5mm}
+{\tiny fill exactly one --- this layer drops once per selected day}
+
+\vspace{2.5mm}
+\noindent
+\begin{tabular}{@{}*{12}{c@{\hspace{2.2mm}}}}
+  \hourcell{00} & \hourcell{01} & \hourcell{02} & \hourcell{03} &
+  \hourcell{04} & \hourcell{05} & \hourcell{06} & \hourcell{07} &
+  \hourcell{08} & \hourcell{09} & \hourcell{10} & \hourcell{11} \\[2mm]
+  \hourcell{12} & \hourcell{13} & \hourcell{14} & \hourcell{15} &
+  \hourcell{16} & \hourcell{17} & \hourcell{18} & \hourcell{19} &
+  \hourcell{20} & \hourcell{21} & \hourcell{22} & \hourcell{23} \\
+\end{tabular}
+
+\vspace{3mm}
+\noindent
+{\tiny Fill boxes solid. Do not tick or cross. One sheet per layer.}
+
+\vfill
+
+% ================= FOOTER =================
+\noindent
+\hfill{\tiny Photograph each and every sheets provided.}\hfill\null\par
+
+\end{document}
