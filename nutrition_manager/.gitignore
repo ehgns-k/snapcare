@@ -1,0 +1,8 @@
+# Generated artifacts (reproducible via build_labels.py / build_dataset.py / train.py / eval.py)
+__pycache__/
+checkpoints/
+data/labels.csv
+dataset_processed/
+predictions.csv
+groundtruth_test.csv
+eval_stats.json

@@ -1,0 +1,19 @@
+# Conda environment for the SnapCare nutrition model.
+# Create with:  conda env create -f environment.yml
+# The CUDA torch wheels (cu124) work with the RTX 3060 + driver 595.
+name: snapcare
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - --extra-index-url https://download.pytorch.org/whl/cu124
+      - torch
+      - torchvision
+      - timm
+      - pandas
+      - pillow
+      - pyyaml
+      - tqdm
+      - numpy

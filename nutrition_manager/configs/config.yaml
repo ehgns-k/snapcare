@@ -1,0 +1,47 @@
+# Config for the Nutrition5k RGB-only nutrition regression model (v1).
+# All paths are relative to nutrition_manager/ (see common.py).
+
+dataset_root: nutrition5k_dataset
+
+# Where overhead RGB frames live: <dataset_root>/<imagery_subdir>/<dish_id>/<rgb_filename>
+imagery_subdir: imagery/realsense_overhead
+rgb_filename: rgb.png
+
+# Official Nutrition5k RGB split id lists (relative to dataset_root).
+splits:
+  train: dish_ids/splits/rgb_train_ids.txt
+  test: dish_ids/splits/rgb_test_ids.txt
+
+# Dish-level ground truth. Only the first 6 CSV fields are used:
+# dish_id, calories, mass, fat, carb, protein  (the rest is per-ingredient data).
+metadata_csvs:
+  - metadata/dish_metadata_cafe1.csv
+  - metadata/dish_metadata_cafe2.csv
+
+# The five regression targets, in the order expected by the official
+# compute_eval_statistics.py (calories, mass, fat, carb, protein).
+targets: [calories, mass, fat, carb, protein]
+
+# Built by data/build_labels.py (relative to nutrition_manager/).
+labels_csv: data/labels.csv
+
+# Multi-view manifest built by build_dataset.py (overhead + side-angle frames).
+# train.py/eval.py use this when present, else fall back to labels_csv.
+manifest_csv: dataset_processed/manifest.csv
+
+model:
+  backbone: convnext_tiny     # any timm model name (efficientnet_b0, resnet50, ...)
+  img_size: 224
+  dropout: 0.2
+
+train:
+  epochs: 12                # fewer needed now that side-angle frames ~25x the data
+  batch_size: 32
+  lr: 3.0e-4
+  weight_decay: 0.05
+  val_frac: 0.1            # fraction of train *dishes* held out for validation
+  seed: 42
+  num_workers: 12
+  amp: true                # mixed precision (recommended on the RTX 3060)
+  clip_percentile: null    # e.g. 99 to clip target outliers before standardizing
+  checkpoint_dir: checkpoints
